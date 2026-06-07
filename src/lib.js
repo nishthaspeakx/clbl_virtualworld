@@ -1,14 +1,13 @@
 // ---- Asset paths -------------------------------------------------------
-// Standardized isometric "miniature world" backgrounds — one per zone, all in
-// the same art style, camera angle, scale and lighting:
-//   World Map  -> level select / location card
-//   Mentor Zone-> Sia teaching + MCQ
-//   NPC Zone   -> guide conversation
-export const TAJ_IMG = '/taj_worldmap.png' // World Map View (location card)
+// Realistic-photo backgrounds:
+//   taj.jpg            -> location card (aerial Taj map)
+//   siabackground.jpg  -> Sia teaching + MCQ (tourists on the path)
+//   guidebackground.png-> guide conversation (entrance gate)
+export const TAJ_IMG = '/taj.jpg' // location card
 export const SIA_IMG = '/sia.png' // Sia mentor character
 // Stage backgrounds
-export const SIA_BG = '/taj_mentor.png' // Mentor Zone (Sia teaching + MCQ)
-export const GUIDE_BG = '/taj_npc.png' // NPC Zone (guide conversation)
+export const SIA_BG = '/siabackground.jpg' // Sia teaching + MCQ
+export const GUIDE_BG = '/guidebackground.png' // guide conversation
 // Built-in placeholders used automatically if the images above are missing.
 export const TAJ_FALLBACK = '/taj-fallback.svg'
 export const SIA_FALLBACK = '/sia-fallback.svg'
