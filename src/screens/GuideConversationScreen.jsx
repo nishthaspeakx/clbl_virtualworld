@@ -126,7 +126,7 @@ export default function GuideConversationScreen({ onContinue }) {
                 🏆
               </div>
               <h2 className="text-2xl font-extrabold text-slate-800">
-                Conversation Started!
+                Level 3 Completed
               </h2>
               <p className="mt-2 text-base font-medium text-slate-500">
                 Great job! You used English at the Taj Mahal.
