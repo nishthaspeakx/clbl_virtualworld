@@ -1,0 +1,565 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: 'Poppins', system-ui, sans-serif;
+  background: radial-gradient(1200px 600px at 50% -10%, #2a1d4a 0%, #140d28 55%, #0b0718 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* hide scrollbars inside the phone for a clean app feel */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* =====================================================================
+   SIA — CSS-animated mentor avatar (Pixar-style, flowing hair)
+   ===================================================================== */
+.sia-avatar {
+  position: relative;
+  width: 200px;
+  height: 264px;
+  --hair-a: #43323a;
+  --hair-b: #271c22;
+  --skin: #f2c9a8;
+  --skin-shade: #e7b48f;
+  --blush: #ec8f88;
+  --lip: #c66054;
+}
+
+.sia-glow {
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  width: 165px;
+  height: 165px;
+  margin-left: -82px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236, 170, 255, 0.32), transparent 70%);
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.sia-speaking .sia-glow { opacity: 1; animation: siaGlow 2s ease-in-out infinite; }
+
+/* ---- long side hair (flows down past the shoulders) ---- */
+.sia-hair-side {
+  position: absolute;
+  top: 66px;
+  width: 52px;
+  height: 188px;
+  background: linear-gradient(160deg, var(--hair-a), var(--hair-b));
+  z-index: 0;
+  box-shadow: inset 6px 0 10px rgba(255, 255, 255, 0.06);
+}
+.sia-hair-side.left {
+  left: 6px;
+  border-radius: 46px 24px 40px 30px;
+  transform: rotate(4deg);
+}
+.sia-hair-side.right {
+  right: 6px;
+  border-radius: 24px 46px 30px 40px;
+  transform: rotate(-4deg);
+}
+/* soft highlight strands */
+.sia-hair-side::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  bottom: 24px;
+  width: 6px;
+  border-radius: 6px;
+  background: linear-gradient(rgba(255, 220, 235, 0.18), transparent);
+}
+.sia-hair-side.left::before { left: 16px; }
+.sia-hair-side.right::before { right: 16px; }
+
+/* ---- shoulders / turtleneck (above side hair) ---- */
+.sia-shoulders {
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  width: 180px;
+  height: 100px;
+  background: linear-gradient(#26262c, #121217);
+  border-radius: 94px 94px 30px 30px;
+  transform-origin: 50% 100%;
+  z-index: 1;
+  animation: siaBreathe 3.6s ease-in-out infinite;
+}
+.sia-shoulders::before { /* collar */
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  margin-left: -17px;
+  width: 34px;
+  height: 24px;
+  background: #2f2f37;
+  border-radius: 0 0 17px 17px;
+}
+.sia-shoulders::after { /* collar button */
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  margin-left: -2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #4a4a54;
+}
+
+.sia-neck {
+  position: absolute;
+  bottom: 88px;
+  left: 50%;
+  margin-left: -16px;
+  width: 32px;
+  height: 36px;
+  background: var(--skin-shade);
+  border-radius: 0 0 16px 16px;
+  z-index: 1;
+}
+
+/* ---- head ---- */
+.sia-head {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  margin-left: -73px;
+  width: 146px;
+  height: 196px;
+  z-index: 2;
+  transform-origin: 50% 92%;
+}
+.sia-speaking .sia-head { animation: siaHeadTalk 1.2s ease-in-out infinite; }
+
+.sia-hair-back {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  width: 136px;
+  height: 188px;
+  background: linear-gradient(150deg, var(--hair-a), var(--hair-b));
+  border-radius: 68px 68px 56px 56px;
+}
+
+.sia-face {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  margin-left: -50px;
+  width: 100px;
+  height: 122px;
+  background: linear-gradient(180deg, var(--skin) 60%, var(--skin-shade));
+  border-radius: 50px 50px 44px 44px / 54px 54px 60px 60px;
+}
+
+/* center-parted crown */
+.sia-hair-top {
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 136px;
+  height: 78px;
+  background: linear-gradient(160deg, #4a3640, var(--hair-b));
+  border-radius: 68px 68px 40% 40%;
+  /* middle parting + soft rounded hairline framing the forehead */
+  clip-path: polygon(
+    0 0, 100% 0, 100% 64%,
+    80% 72%, 58% 40%, 50% 46%, 42% 40%, 20% 72%, 0 64%
+  );
+}
+.sia-hair-top::after { /* center part highlight */
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  margin-left: -1px;
+  width: 2px;
+  height: 30px;
+  background: rgba(255, 220, 235, 0.18);
+  border-radius: 2px;
+}
+
+/* front locks framing the cheeks */
+.sia-hair-front {
+  position: absolute;
+  top: 40px;
+  width: 30px;
+  height: 116px;
+  background: linear-gradient(180deg, var(--hair-a), var(--hair-b));
+  z-index: 1;
+}
+.sia-hair-front.left {
+  left: 2px;
+  border-radius: 26px 10px 24px 34px;
+  transform: rotate(7deg);
+}
+.sia-hair-front.right {
+  right: 2px;
+  border-radius: 10px 26px 34px 24px;
+  transform: rotate(-7deg);
+}
+
+/* ---- brows (thin, soft, gently arched) ---- */
+.sia-brow {
+  position: absolute;
+  top: 46px;
+  width: 23px;
+  height: 4px;
+  background: #6b4f3d;
+  border-radius: 8px 8px 6px 6px;
+  transition: transform 0.3s, top 0.3s;
+}
+.sia-brow.left { left: 50%; margin-left: -33px; transform: rotate(-5deg); }
+.sia-brow.right { left: 50%; margin-left: 10px; transform: rotate(5deg); }
+
+/* ---- eyes (big, warm brown) ---- */
+.sia-eyes {
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  margin-left: -34px;
+  width: 68px;
+  display: flex;
+  justify-content: space-between;
+  transition: transform 0.3s;
+}
+.sia-eye {
+  position: relative;
+  width: 26px;
+  height: 27px;
+  background: #fdfdfd;
+  border-radius: 52% 52% 50% 50%;
+  overflow: hidden;
+  box-shadow: inset 0 2px 2px rgba(80, 50, 30, 0.15);
+}
+.pupil {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #8a6037 0%, #5e4124 55%, #3a2716 100%);
+}
+.pupil::after { /* main catchlight */
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  background: #fff;
+  border-radius: 50%;
+}
+.sia-speaking .pupil { animation: siaDart 2.3s ease-in-out infinite; }
+.eyelid {
+  position: absolute;
+  inset: 0;
+  background: var(--skin);
+  transform: translateY(-101%);
+  animation: siaBlink 4.2s infinite;
+}
+.sia-eye.right .eyelid { animation-delay: 0.08s; }
+
+.sia-nose {
+  position: absolute;
+  top: 78px;
+  left: 50%;
+  margin-left: -4px;
+  width: 8px;
+  height: 11px;
+  background: linear-gradient(var(--skin), var(--skin-shade));
+  border-radius: 40% 40% 50% 50%;
+  box-shadow: -2px 1px 1px rgba(150, 100, 70, 0.18);
+}
+
+.sia-cheek {
+  position: absolute;
+  top: 86px;
+  width: 20px;
+  height: 12px;
+  background: radial-gradient(circle, var(--blush), transparent 70%);
+  border-radius: 50%;
+  opacity: 0.55;
+  transition: opacity 0.3s;
+}
+.sia-cheek.left { left: 50%; margin-left: -46px; }
+.sia-cheek.right { left: 50%; margin-left: 26px; }
+
+/* ---- lips: a warm open smile at rest (teeth peeking) ---- */
+.mouth {
+  position: absolute;
+  top: 98px;
+  left: 50%;
+  margin-left: -15px;
+  width: 30px;
+  height: 15px;
+  background: #9c4038;
+  border-top: 2px solid var(--lip);
+  border-radius: 6px 6px 22px 22px;
+  overflow: hidden;
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.18);
+  transition: width 0.3s, height 0.3s, margin-left 0.3s;
+}
+.mouth::after { /* upper teeth */
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 9%;
+  width: 82%;
+  height: 6px;
+  background: #fdf7f3;
+  border-radius: 0 0 5px 5px;
+}
+.sia-speaking .mouth {
+  background: #9a4438;
+  border-top: none;
+  box-shadow: none;
+  animation: siaLip 0.42s infinite;
+}
+.sia-speaking .mouth::after { display: none; }
+
+/* ---- Emotions ---- */
+.emo-happy .sia-cheek,
+.emo-excited .sia-cheek,
+.emo-proud .sia-cheek,
+.emo-playful .sia-cheek { opacity: 0.7; }
+.emo-serious .sia-cheek,
+.emo-helpful .sia-cheek { opacity: 0.4; }
+
+.emo-happy .sia-eyes,
+.emo-excited .sia-eyes { transform: scale(1.06); }
+
+.emo-excited .sia-brow.left,
+.emo-playful .sia-brow.left { top: 43px; transform: rotate(-9deg); }
+.emo-excited .sia-brow.right,
+.emo-playful .sia-brow.right { top: 43px; transform: rotate(9deg); }
+
+.emo-excited.sia-speaking .sia-head { animation-duration: 0.85s; }
+.emo-proud.sia-speaking .sia-head { animation-duration: 1.5s; }
+
+.emo-serious .sia-brow.left { transform: rotate(8deg); top: 48px; }
+.emo-serious .sia-brow.right { transform: rotate(-8deg); top: 48px; }
+
+.emo-playful .sia-brow.left { transform: rotate(-13deg); top: 41px; }
+
+/* big bright smile */
+.emo-excited:not(.sia-speaking) .mouth {
+  width: 33px;
+  height: 17px;
+  margin-left: -16.5px;
+}
+/* gentle cheeky smile */
+.emo-playful:not(.sia-speaking) .mouth {
+  width: 25px;
+  height: 12px;
+  margin-left: -12.5px;
+}
+/* calm closed smile (no teeth) */
+.emo-serious:not(.sia-speaking) .mouth,
+.emo-helpful:not(.sia-speaking) .mouth {
+  width: 24px;
+  height: 8px;
+  margin-left: -12px;
+  background: transparent;
+  border-top: none;
+  border-bottom: 3px solid var(--lip);
+  border-radius: 0 0 20px 20px;
+  box-shadow: none;
+}
+.emo-serious:not(.sia-speaking) .mouth::after,
+.emo-helpful:not(.sia-speaking) .mouth::after { display: none; }
+
+/* ---- Keyframes ---- */
+@keyframes siaLip {
+  0%   { height: 4px;  width: 16px; margin-left: -8px;  border-radius: 8px; }
+  25%  { height: 11px; width: 14px; margin-left: -7px;  border-radius: 50%; }
+  50%  { height: 16px; width: 20px; margin-left: -10px; border-radius: 50% 50% 60% 60%; }
+  75%  { height: 7px;  width: 24px; margin-left: -12px; border-radius: 2px 2px 22px 22px; }
+  100% { height: 4px;  width: 16px; margin-left: -8px;  border-radius: 8px; }
+}
+@keyframes siaBlink {
+  0%, 93%, 100% { transform: translateY(-101%); }
+  96%           { transform: translateY(0); }
+}
+@keyframes siaHeadTalk {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  25%      { transform: rotate(-1.6deg) translateY(-1px); }
+  50%      { transform: rotate(0.4deg) translateY(1px); }
+  75%      { transform: rotate(1.6deg) translateY(-1px); }
+}
+@keyframes siaBreathe {
+  0%, 100% { transform: translateY(0) scaleX(1); }
+  50%      { transform: translateY(-2px) scaleX(1.012); }
+}
+@keyframes siaDart {
+  0%, 100% { transform: translateX(0); }
+  30%      { transform: translateX(2px); }
+  65%      { transform: translateX(-2px); }
+}
+@keyframes siaGlow {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sia-shoulders, .sia-speaking .sia-head, .sia-speaking .mouth,
+  .sia-speaking .pupil, .eyelid, .sia-speaking .sia-glow { animation: none; }
+}
+/* =====================================================================
+   GUIDE — connected SVG character (animations via SVG transforms)
+   ===================================================================== */
+.guide-avatar {
+  width: 230px;
+  height: auto;
+  overflow: visible;
+}
+
+/* transform-box: view-box lets transform-origin use viewBox coordinates,
+   so limbs pivot at real shoulder / elbow / wrist points. */
+.guide-body,
+.guide-neck,
+.guide-head,
+.guide-eyes,
+.guide-eyebrows,
+.guide-mouth,
+.guide-mouth .mouth-open,
+.guide-pupil,
+.guide-left-arm,
+.guide-left-forearm,
+.guide-left-hand,
+.guide-right-arm,
+.guide-right-forearm,
+.guide-right-hand {
+  transform-box: view-box;
+}
+
+/* pivot points (viewBox units) */
+.guide-body { transform-origin: 120px 200px; animation: guideBreathing 3.8s ease-in-out infinite; }
+.guide-neck { transform-origin: 120px 140px; }
+.guide-head { transform-origin: 120px 132px; }
+.guide-eyebrows { transform-origin: 120px 66px; }
+.guide-eyes { transform-origin: 120px 84px; }
+.guide-mouth .mouth-open { transform-origin: 120px 118px; }
+
+.guide-right-arm { transform-origin: 64px 170px; }
+.guide-right-forearm { transform-origin: 42px 206px; }
+.guide-right-hand { transform-origin: 50px 142px; }
+.guide-left-arm { transform-origin: 176px 170px; }
+.guide-left-forearm { transform-origin: 192px 226px; }
+.guide-left-hand { transform-origin: 186px 276px; }
+
+/* ---- mouth: smile at rest, lip-sync while speaking ---- */
+.guide-mouth .mouth-open { opacity: 0; }
+.guide-mouth .mouth-smile { opacity: 1; }
+.guide-speaking .guide-mouth .mouth-open { opacity: 1; animation: guideLipSync 0.24s infinite; }
+.guide-speaking .guide-mouth .mouth-smile { opacity: 0; }
+
+/* ---- eyes: blink + idle look ---- */
+.guide-eyelid {
+  transform-box: fill-box;
+  transform-origin: center top;
+  transform: scaleY(0);
+  animation: guideBlink 4.6s infinite;
+}
+.guide-eye:last-of-type .guide-eyelid { animation-delay: 0.12s; }
+.guide-pupil { animation: guideEyeLook 6s ease-in-out infinite; }
+.guide-speaking .guide-pupil { animation: none; transform: translateX(0); }
+
+/* ---- head nod / neck / breathing / shoulders ---- */
+.guide-speaking .guide-head { animation: guideHeadTalk 1.2s ease-in-out infinite; }
+.guide-listening .guide-head { animation: guideNod 1.3s ease-in-out 2; }
+.guide-speaking .guide-body { animation: guideShoulderShift 1.6s ease-in-out infinite; }
+
+/* ---- eyebrows by emotion ---- */
+.gemo-welcoming .guide-eyebrows,
+.gemo-happy .guide-eyebrows,
+.gemo-friendly .guide-eyebrows { animation: guideBrowWelcome 0.6s ease forwards; }
+.gemo-curious .guide-eyebrows,
+.gemo-helpful .guide-eyebrows { animation: guideBrowQuestion 0.6s ease forwards; }
+
+/* ---- right-arm gestures ---- */
+.guide-speaking .guide-right-arm { animation: guideArmGesture 1.8s ease-in-out infinite; }
+/* welcoming / friendly -> friendly wave at the wrist */
+.gemo-welcoming .guide-right-hand,
+.gemo-friendly .guide-right-hand { animation: guideWave 0.85s ease-in-out infinite; }
+/* informative / reassuring -> gentle presenting raise (overrides arm gesture) */
+.gemo-informative .guide-right-arm,
+.gemo-reassuring .guide-right-arm { animation: guidePresent 2.2s ease-in-out infinite; }
+
+/* ---- keyframes (all transform-based, SVG-safe) ---- */
+@keyframes guideLipSync {
+  0%   { transform: scaleY(0.25) scaleX(0.9); }
+  25%  { transform: scaleY(0.7) scaleX(0.95); }
+  50%  { transform: scaleY(1) scaleX(1.05); }
+  75%  { transform: scaleY(0.45) scaleX(1); }
+  100% { transform: scaleY(0.25) scaleX(0.9); }
+}
+@keyframes guideBlink {
+  0%, 92%, 100% { transform: scaleY(0); }
+  96%           { transform: scaleY(1); }
+}
+@keyframes guideEyeLook {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(1.6px); }
+  60%      { transform: translateX(-1.6px); }
+}
+@keyframes guideHeadTalk {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  25%      { transform: rotate(-1.8deg) translateY(-1px); }
+  50%      { transform: rotate(0.5deg) translateY(1px); }
+  75%      { transform: rotate(1.8deg) translateY(-1px); }
+}
+@keyframes guideNod {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(3px) rotate(0.8deg); }
+}
+@keyframes guideBreathing {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-1.5px) scale(1.005); }
+}
+@keyframes guideShoulderShift {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  30%      { transform: rotate(0.6deg) translateY(-1px); }
+  70%      { transform: rotate(-0.6deg) translateY(-1px); }
+}
+@keyframes guideBrowWelcome {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-3px); }
+}
+@keyframes guideBrowQuestion {
+  0%   { transform: translateY(0); }
+  60%  { transform: translateY(-2.5px); }
+  100% { transform: translateY(-2px); }
+}
+@keyframes guideArmGesture {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-4deg); }
+}
+@keyframes guideWave {
+  0%, 100% { transform: rotate(-13deg); }
+  50%      { transform: rotate(13deg); }
+}
+@keyframes guidePresent {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  50%      { transform: rotate(-5deg) translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide-body, .guide-speaking .guide-head, .guide-listening .guide-head,
+  .guide-speaking .guide-mouth .mouth-open, .guide-pupil, .guide-eyelid,
+  .guide-right-arm, .guide-right-hand { animation: none; }
+}
