@@ -18,9 +18,36 @@
 
 let currentUtterance = null // GC guard — MUST stay referenced while speaking
 let keepAlive = null
+let primed = false
 
 const synth = () =>
   typeof window !== 'undefined' ? window.speechSynthesis : null
+
+// Chrome (and Safari) only allow speechSynthesis after a real user gesture.
+// Our lines are spoken from React effects (not inside the click handler), so
+// the browser silently drops them until the engine is "unlocked". Speaking a
+// silent utterance from within the FIRST user gesture unlocks it for the whole
+// session. Idempotent.
+export function primeSpeech() {
+  if (primed) return
+  const s = synth()
+  if (!s || typeof SpeechSynthesisUtterance === 'undefined') return
+  try {
+    s.resume()
+    const u = new SpeechSynthesisUtterance(' ')
+    u.volume = 0
+    u.rate = 2
+    s.speak(u)
+    primed = true
+  } catch {}
+}
+
+// Auto-prime on the very first interaction anywhere in the app.
+if (typeof window !== 'undefined') {
+  window.addEventListener('pointerdown', primeSpeech, { once: true })
+  window.addEventListener('touchstart', primeSpeech, { once: true })
+  window.addEventListener('keydown', primeSpeech, { once: true })
+}
 
 function stopKeepAlive() {
   if (keepAlive) {
