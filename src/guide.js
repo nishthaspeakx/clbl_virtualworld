@@ -6,14 +6,14 @@
 //        preferring Indian English).
 // ---------------------------------------------------------------------------
 
+import { speakWithFallback } from './tts'
+
 // Register pre-recorded clips here, keyed by EXACT dialogue text, e.g.
 //   'Welcome to Taj Mahal.': '/audio/guide/welcome.mp3'
 // Drop mp3s in public/audio/guide/. Anything not listed uses speechSynthesis.
 export const GUIDE_AUDIO = {}
 
 const GUIDE_VOICE = { rate: 0.9, pitch: 0.85, volume: 1, lang: 'en-IN' }
-
-const estimate = (text) => Math.min(7000, 700 + text.length * 60)
 
 // Preferred named voices (Indian / known clear male voices first).
 const PREFERRED = /(india|indian|ravi|rishi|prabhat|google uk english male|microsoft ravi|microsoft mark)/i
@@ -42,65 +42,17 @@ export function pickGuideVoice() {
 }
 
 export function speakGuide(text, emotion = 'welcoming', { onStart, onEnd } = {}) {
-  let finished = false
-  let audio = null
-  let fallbackTimer = null
-
-  const finish = () => {
-    if (finished) return
-    finished = true
-    if (fallbackTimer) clearTimeout(fallbackTimer)
-    onEnd && onEnd()
-  }
-  const start = () => onStart && onStart()
-
-  const useTTS = () => {
-    const synth = typeof window !== 'undefined' && window.speechSynthesis
-    if (!synth || typeof SpeechSynthesisUtterance === 'undefined') {
-      start()
-      fallbackTimer = setTimeout(finish, estimate(text))
-      return
-    }
-    try {
-      synth.cancel()
-    } catch {}
-    const u = new SpeechSynthesisUtterance(text)
-    const v = pickGuideVoice()
-    if (v) u.voice = v
-    u.lang = (v && v.lang) || GUIDE_VOICE.lang
-    u.rate = GUIDE_VOICE.rate
-    u.pitch = GUIDE_VOICE.pitch
-    u.volume = GUIDE_VOICE.volume
-    u.onstart = start
-    u.onend = finish
-    u.onerror = finish
-    fallbackTimer = setTimeout(finish, estimate(text) + 1500)
-    synth.speak(u)
-  }
-
-  const src = GUIDE_AUDIO[text]
-  if (src) {
-    audio = new Audio(src)
-    audio.volume = GUIDE_VOICE.volume
-    audio.onplay = start
-    audio.onended = finish
-    audio.onerror = useTTS
-    audio.play().catch(useTTS)
-  } else {
-    useTTS()
-  }
-
-  const cancel = () => {
-    if (audio) {
-      try {
-        audio.pause()
-      } catch {}
-    }
-    try {
-      window.speechSynthesis && window.speechSynthesis.cancel()
-    } catch {}
-    finish()
-  }
-
-  return { cancel }
+  return speakWithFallback({
+    text,
+    audioSrc: GUIDE_AUDIO[text],
+    voiceCfg: {
+      pickVoice: pickGuideVoice,
+      rate: GUIDE_VOICE.rate,
+      pitch: GUIDE_VOICE.pitch,
+      volume: GUIDE_VOICE.volume,
+      lang: GUIDE_VOICE.lang,
+    },
+    onStart,
+    onEnd,
+  })
 }

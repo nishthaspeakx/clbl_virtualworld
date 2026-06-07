@@ -8,15 +8,14 @@
 // Returns a controller: { cancel }.
 // ---------------------------------------------------------------------------
 
+import { speakWithFallback } from './tts'
+
 // Register pre-recorded clips here, keyed by the EXACT dialogue text, e.g.
 //   'Hello, welcome to Taj Mahal.': '/audio/sia/hello.mp3'
 // Drop the mp3s in public/audio/sia/. Anything not listed uses speechSynthesis.
 export const SIA_AUDIO = {}
 
 const SIA_VOICE = { rate: 0.9, pitch: 1.1, volume: 1, lang: 'en-IN' }
-
-// Rough speaking duration estimate (ms) for the silent / no-TTS fallback.
-const estimate = (text) => Math.min(6500, 700 + text.length * 60)
 
 // Prefer a warm Indian-English female voice, then any English female,
 // then any English voice.
@@ -42,79 +41,17 @@ export function pickSiaVoice() {
 }
 
 export function speakSia(text, emotion = 'happy', { onStart, onEnd } = {}) {
-  let finished = false
-  let audio = null
-  let fallbackTimer = null
-
-  const finish = () => {
-    if (finished) return
-    finished = true
-    if (fallbackTimer) clearTimeout(fallbackTimer)
-    onEnd && onEnd()
-  }
-  const start = () => onStart && onStart()
-
-  const useTTS = () => {
-    const synth = typeof window !== 'undefined' && window.speechSynthesis
-    if (!synth || typeof SpeechSynthesisUtterance === 'undefined') {
-      // No speech support at all — animate for an estimated duration.
-      start()
-      fallbackTimer = setTimeout(finish, estimate(text))
-      return
-    }
-    try {
-      synth.cancel()
-    } catch {}
-    const u = new SpeechSynthesisUtterance(text)
-    const v = pickSiaVoice()
-    if (v) u.voice = v
-    u.lang = (v && v.lang) || SIA_VOICE.lang
-    u.rate = SIA_VOICE.rate
-    u.pitch = SIA_VOICE.pitch
-    u.volume = SIA_VOICE.volume
-    u.onstart = start
-    u.onend = finish
-    u.onerror = finish
-    // Safety net: some browsers occasionally drop onend for long lines.
-    fallbackTimer = setTimeout(finish, estimate(text) + 1500)
-    synth.speak(u)
-  }
-
-  const src = SIA_AUDIO[text]
-  if (src) {
-    audio = new Audio(src)
-    audio.volume = SIA_VOICE.volume
-    audio.onplay = start
-    audio.onended = finish
-    audio.onerror = useTTS
-    audio.play().catch(useTTS)
-  } else {
-    useTTS()
-  }
-
-  const cancel = () => {
-    if (audio) {
-      try {
-        audio.pause()
-      } catch {}
-    }
-    try {
-      window.speechSynthesis && window.speechSynthesis.cancel()
-    } catch {}
-    finish()
-  }
-
-  return { cancel }
-}
-
-// Warm up the voice list early (Chrome loads voices asynchronously).
-if (typeof window !== 'undefined' && window.speechSynthesis) {
-  try {
-    window.speechSynthesis.getVoices()
-    window.speechSynthesis.onvoiceschanged = () => {
-      try {
-        window.speechSynthesis.getVoices()
-      } catch {}
-    }
-  } catch {}
+  return speakWithFallback({
+    text,
+    audioSrc: SIA_AUDIO[text],
+    voiceCfg: {
+      pickVoice: pickSiaVoice,
+      rate: SIA_VOICE.rate,
+      pitch: SIA_VOICE.pitch,
+      volume: SIA_VOICE.volume,
+      lang: SIA_VOICE.lang,
+    },
+    onStart,
+    onEnd,
+  })
 }

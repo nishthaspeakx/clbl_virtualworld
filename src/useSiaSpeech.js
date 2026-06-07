@@ -9,13 +9,21 @@ export default function useSiaSpeech(initialEmotion = 'happy') {
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [emotion, setEmotion] = useState(initialEmotion)
   const ctrl = useRef(null)
+  const active = useRef({ text: null, on: false })
 
   const speak = useCallback((text, emo = 'happy') => {
+    // Ignore a duplicate rapid call for the same line (React StrictMode
+    // double-invokes effects in dev), which would cancel + restart the voice.
+    if (active.current.on && active.current.text === text) return
     setEmotion(emo)
     if (ctrl.current) ctrl.current.cancel()
+    active.current = { text, on: true }
     setIsSpeaking(true)
     ctrl.current = speakSia(text, emo, {
-      onEnd: () => setIsSpeaking(false),
+      onEnd: () => {
+        active.current.on = false
+        setIsSpeaking(false)
+      },
     })
   }, [])
 
