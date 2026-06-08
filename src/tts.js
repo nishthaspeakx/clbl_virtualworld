@@ -33,10 +33,13 @@ export function primeSpeech() {
   const s = synth()
   if (!s || typeof SpeechSynthesisUtterance === 'undefined') return
   try {
+    s.cancel()
     s.resume()
-    const u = new SpeechSynthesisUtterance(' ')
+    // Non-empty text — whitespace-only utterances are dropped by Chrome and
+    // never unlock the engine. volume 0 keeps it silent.
+    const u = new SpeechSynthesisUtterance('SpeakX')
     u.volume = 0
-    u.rate = 2
+    u.rate = 1.5
     s.speak(u)
     primed = true
   } catch {}
